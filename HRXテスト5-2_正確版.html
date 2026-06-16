@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRXテスト5-2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 30px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+
+        .question-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 12px;
+            margin-top: 4px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            color: #555;
+            font-size: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            justify-content: flex-end;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .reset-btn {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .reset-btn:hover {
+            background: #dee2e6;
+        }
+
+        .results {
+            display: none;
+            padding: 30px;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-card h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .score-card .score {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .score-card .percentage {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #dee2e6;
+        }
+
+        .result-item.correct {
+            border-left-color: #28a745;
+            background: #f0f9f1;
+        }
+
+        .result-item.incorrect {
+            border-left-color: #dc3545;
+            background: #fef3f4;
+        }
+
+        .result-item-number {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .result-item-question {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .result-item-answer {
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .your-answer {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .correct-answer {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .mark {
+            display: inline-block;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 3px;
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        .mark.correct {
+            background: #28a745;
+            color: white;
+        }
+
+        .mark.incorrect {
+            background: #dc3545;
+            color: white;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .back-btn:hover {
+            background: #764ba2;
+        }
+
+        .name-input {
+            margin-bottom: 25px;
+        }
+
+        .name-input label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .name-input input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 4px;
+            margin-bottom: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HRXテスト5-2</h1>
+            <p>総合商社ビジネスモデル進化に関するテスト（30問・100点配点）</p>
+        </div>
+
+        <div id="testForm" class="content">
+            <div class="name-input">
+                <label for="studentName">氏名</label>
+                <input type="text" id="studentName" placeholder="氏名を入力してください">
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+            </div>
+
+            <form id="answersForm" class="form-section"></form>
+
+            <div class="button-group">
+                <button type="reset" class="reset-btn" onclick="resetForm()">リセット</button>
+                <button type="button" class="submit-btn" onclick="submitTest()">テスト終了・回答確認</button>
+            </div>
+        </div>
+
+        <div id="resultsSection" class="results">
+            <div class="score-card">
+                <h2>テスト結果</h2>
+                <div class="score"><span id="finalScore">0</span>/100</div>
+                <div class="percentage">正解率: <span id="correctPercentage">0</span>%</div>
+            </div>
+            <div id="resultsList"></div>
+            <button type="button" class="back-btn" onclick="backToTest()">テストに戻る</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [{"number": 1, "title": "1947年にGHQが実施した「財閥解体」により、旧三井物産や旧三菱商事はどのような措置を受けたか？", "options": ["商号は変更されたが、企業体としての統一性は保たれた", "文字通り何百もの小さな会社に徹底的に分割・解体された", "完全に廃止され、戦後は全く新しい企業として再出発した", "外資による買収を避けるために、段階的に国営化された"], "correct": 2}, {"number": 2, "title": "総合商社の「大合同」が行われた時期は？", "options": ["1950年代〜占領終了後", "1960年代の高度経済成長期", "1980年代のバブル期", "1945年〜1950年代"], "correct": 1}, {"number": 3, "title": "戦後の財閥系商社（三菱商事、三井物産、住友商事）と非財閥系商社（伊藤忠商事、丸紅）の最大の戦略的違いはどれか？", "options": ["財閥系は金融機能を持ち、非財閥系は物流に特化した", "財閥系は「重厚長大」なビジネスに強く、非財閥系は繰維や生活消費から多角化してきた", "財閥系は政府との関係が強く、非財閥系は民間企業のみとの取引だった", "財閥系は海外展開に注力し、非財閥系は国内に限定した"], "correct": 2}, {"number": 4, "title": "1990年代後半の銀行再編が商社業界に与えた最大の影響は何か？", "options": ["商社が銀行業務を兼業することが可能になった", "商社が上場廃止を余儀なくされる企業が相次いだ", "メインバンクの合従連衡に伴い、中堅商社の統廃合が促された", "商社による海外投資が規制されるようになった"], "correct": 3}, {"number": 5, "title": "2004年に誕生した「双日」はどの企業の統合によって成立したか？", "options": ["伊藤忠商事と丸紅の経営統合", "丸紅と豊田通商の経営統合", "日商岩井とニチメンの経営統合", "三菱商事と三井物産の経営統合"], "correct": 3}, {"number": 6, "title": "1990年代後半に「商社不要論」が叫ばれた主な理由は？", "options": ["インターネット普及とメーカーのグローバル化により、仲介者を通さない直接取引が可能になったため", "政府による商社事業の規制が強化されたため", "大手銀行による商社事業への進出が相次いだため", "新興国の経済成長により、商社の国際的な価値が低下したため"], "correct": 1}, {"number": 7, "title": "総合商社が1990年代から2000年代にかけて行った最大のビジネスモデル転換は何か？", "options": ["国内流通網の構築から国際貿易への転換", "金融商品の販売から商品先物の取引へのシフト", "製造業からサービス業への事業多角化", "「トレーディング」から「事業投資・経営」への軸足の移行"], "correct": 4}, {"number": 8, "title": "2000年代以降、商社がどの領域で「莫大な利益」を上げていたか？", "options": ["シェアリングエコノミー関連事業", "再生可能エネルギーの開発", "資源ビジネス（銅や原油など）", "高速通信インフラのビジネス"], "correct": 3}, {"number": 9, "title": "2015年度決算で歴史的ショックとなったのは何か？", "options": ["住友商事の経営が破綻寸前に陥った", "双日が完全に事業から撤退を表明した", "三菱商事と三井物産が創業以来「初の最終赤字」に転落した", "伊藤忠商事が初めて最終赤字に転落した"], "correct": 3}, {"number": 10, "title": "2015年度に純利益で業界トップに立った商社はどれか？その背景は何か？", "options": ["伊藤忠商事が非資源領域を強化し、生活消費に注力したから", "住友商事が海外展開を加速させた", "三井物産がエネルギー事業を統合した", "三菱商事が資源投資を加速させた"], "correct": 1}, {"number": 11, "title": "伊藤忠商事の非資源シフトを象徴するキーマンは誰か？", "options": ["石井敬太氏", "垣内威彦氏", "岡藤正広氏", "中西勝也氏"], "correct": 3}, {"number": 12, "title": "現在の総合商社が単なる「仲介業者」から変貌した姿は何か？", "options": ["政府所有企業となった", "自らの資金で企業を買収・経営する「プライベート・エクイティ（PE）ファンド」のような存在", "IT企業へと事業転換した", "銀行機能を備えた金融機関"], "correct": 2}, {"number": 13, "title": "2020年にウォーレン・バフェット氏が日本の商社株を大量購入した理由として、資料から読み取れる最も適切な説明は？", "options": ["日本経済が今後20年で必ず回復すると予想したから", "日本の財閥企業が再び優位性を取り戻すと判断したから", "アメリカの投資ファンドとの競争に勝つためだった", "商社が「世界中に分散投資し、莫大なキャッシュを生み出す優秀な投資会社」へと変貌していたから"], "correct": 4}, {"number": 14, "title": "三菱商事の2024年のメガニュース「ローソン非公開化」が示す最新戦略は何か？", "options": ["流通小売りから撤退して、エネルギー領域に集中する", "コンビニ業界を独占化する意図", "原料調達（川上）から小売・リテール（川下）まで、バリューチェーン全体を設計・最適化するモデルへの進化", "KDDIとの経営統合を視野に入れた戦略"], "correct": 3}, {"number": 15, "title": "住友商事が直営で経営している小売業として、資料で明記されているのはどれか？", "options": ["ファミリーマートとローソン", "イオンと業務スーパー", "食品スーパー「サミット」と薬局「トモズ」", "セブン-イレブンとファミリーマート"], "correct": 3}, {"number": 16, "title": "三井物産が「セブン-イレブン」との関係において、どのような役割を担っているか？", "options": ["弁当や総菜の巨大な製造・物流ネットワークを裏で支える「黒衣」的存在", "システム開発を専門に担当している", "セブン-イレブンの全店舗を直営管理している", "セブン-イレブンの筆頭株主として経営支配している"], "correct": 1}, {"number": 17, "title": "丸紅が構築している川下戦略は、どの流通企業との関係を中心としているか？", "options": ["日本最大の流通グループ「イオン」との資本業務提携", "ホームセンター大手との戦略的提携", "地域スーパーの直営化", "ネット通販企業との統合"], "correct": 1}, {"number": 18, "title": "豊田通商の川下戦略の特徴はどれか？", "options": ["食品流通ネットワークの完全掌握", "オンライン小売プラットフォームの構築", "スーパーやコンビニなどの小売チェーン保有", "自動車ディーラー（販売店）ネットワークの世界展開"], "correct": 4}, {"number": 19, "title": "商社がスーパーや外食チェーンに出資・参画する最大の理由は何か？", "options": ["雇用創出による社会貢献", "「消費者のリアルな購買データ（POSデータ）」を獲得し、バリューチェーン全体の最適化に活用するため", "不動産投資として資産価値の向上を狙うため", "単純な利益追求のためだけ"], "correct": 2}, {"number": 20, "title": "商社にとって小売りチェーンが「究極のデータ収集装置」として機能する理由は？", "options": ["小売店は政府の統計調査に協力しているから", "オンライン販売より商品単価が高いから", "小売りで「誰が、いつ、何を、いくらで買ったか」という最終消費データを把握でき、それを分析・AI活用してバリューチェーン全体を最適化できるから", "小売店にはセキュリティカメラがあるから"], "correct": 3}, {"number": 21, "title": "三菱商事が2025年7月に発足させた「エムシーディースリー（MCD3）」の主な役割は何か？", "options": ["AI・デジタル技術を活用したサービス・ソリューションの企画開発・提供と、商社の産業ネットワークを使ったDXサービス事業化", "海外拠点のネットワーク構築", "不動産開発事業の推進", "三菱商事の社内システムの保守管理のみ"], "correct": 1}, {"number": 22, "title": "伊藤忠商事が掲げるデジタル戦略「AIX」の基本方針は何か？", "options": ["外部のデジタル企業を傘下に入れることのみ", "伊藤忠グループのシステムを全てクラウド化する", "AI開発企業への投資に特化する", "グループ内リソースを活用し、「稼ぐ、削る、防ぐ」に資するデジタル化により企業価値向上を目指す"], "correct": 4}, {"number": 23, "title": "住友商事の「Insight Edge」と同社の「SCSK」の役割分担として、最も正確な説明はどれか？", "options": ["SCSKが大規模SI・ITサービスの色が強いのに対し、Insight EdgeはAI・データサイエンス・プロトタイプ開発・現場DXの色が強い", "両社は全く同じ機能を持つため、実質的な役割の違いはない", "SCSKが新規事業開発を行い、Insight Edgeは既存事業の効率化に特化している", "InsightEdgeは住商グループ全体の最高経営戦略を決定し、SCSKは外部企業のシステム保守のみを担う"], "correct": 1}, {"number": 24, "title": "丸紅デジタル・イノベーションが実施した「チリのウニ工場へのAI画像認識導入」はどのような課題を解決したか？", "options": ["輸送ルートの最適化", "従業員の給与管理の効率化", "工場の機械操作の無人化", "ウニの選別・品質評価のような現場業務をAIで支援する"], "correct": 4}, {"number": 25, "title": "双日が実施している「本マグロ養殖DX」において、AI画像解析とアプリ開発によって実現していることの組み合わせとして、最も正確なものはどれか？", "options": ["いけす内の尾数をAI画像解析で推定・カウントして給餌を最適化し、赤潮の挙動を予測するアプリで属人的な養殖業のデータ化を実現", "水温と塩分濃度のセンサー化のみで、あくまで人手による給餌方式は変わらない", "病気の自動診断と治療薬の自動投与システムの導入", "給餌量の完全自動化と、漁獲量の事前予測による市場価格操作"], "correct": 1}, {"number": 26, "title": "伊藤忠商事が「CTC」の親会社として保有する株式比率は？", "options": ["51%以上、未満100%", "33%程度（主要株主だが少数株主）", "10%未満（投資家としての持分）", "100%（完全子会社）"], "correct": 4}, {"number": 27, "title": "三井物産のDXイニシアティブ「Moon Creative Lab」の主な特徴は？", "options": ["既存事業の効率化のみに注力", "外部企業のシステム開発を受託する", "グループの約4万2,000人の社員からアイデアを集め、0→1の新規事業を生み出す仕組み", "AI技術の研究開発に特化している"], "correct": 3}, {"number": 28, "title": "豊田通商が2025年5月に発足させた「トヨタソフトウェアアカデミー」における豊田通商の主な貢献は？", "options": ["学生の就職斡旋業務", "外部講師のみの人材派遣", "約20年にわたり海外を中心に培った車載用ソフトウェア開発とエンジニア育成に関する知見の提供", "アカデミー開設地の不動産提供のみ"], "correct": 3}, {"number": 29, "title": "三井物産がアビームコンサルティングの支援を受けて実施した「業態変革プロジェクト」での新基幹システム「MICAN」の構築と同時に実施された施策として、資料に明記されているものはどれか？", "options": ["新しい人事評価制度の導入と全社員の給与体系の変更", "システム導入のみで、組織構造や業務プロセスは変更なし", "子会社の大規模なリストラクチャリングと海外部門の売却", "SSC導入、業務標準化・可視化、グローバル経営基盤の再構築"], "correct": 4}, {"number": 30, "title": "双日テックイノベーション（旧：日商エレクトロニクス等）が提供する「Natic」の主な機能は？", "options": ["海外拠点の給与計算管理システム", "資源相場の予測分析ツール", "金融商品の自動取引システム", "業務最適化・ローコード開発支援フレームワークで、グループ内で培った仕組みを外部企業にも外販・展開している"], "correct": 4}];
+
+        window.addEventListener('load', () => {
+            generateQuestions();
+        });
+
+        function generateQuestions() {
+            const form = document.getElementById('answersForm');
+            questions.forEach(q => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                let optionsHTML = '<div class="options">';
+                q.options.forEach((option, index) => {
+                    const optionId = `q${q.number}_opt${index + 1}`;
+                    optionsHTML += `
+                        <div class="option">
+                            <input type="radio" id="${optionId}" name="q${q.number}" value="${index + 1}" onchange="updateProgress()">
+                            <label for="${optionId}">${option}</label>
+                        </div>
+                    `;
+                });
+                optionsHTML += '</div>';
+
+                questionDiv.innerHTML = `
+                    <div class="question-title">
+                        <span class="question-number">Q${q.number}</span>. ${q.title}
+                    </div>
+                    ${optionsHTML}
+                `;
+                form.appendChild(questionDiv);
+            });
+        }
+
+        function updateProgress() {
+            const form = document.getElementById('answersForm');
+            const inputs = form.querySelectorAll('input[type="radio"]');
+            const checked = form.querySelectorAll('input[type="radio"]:checked');
+            const percentage = (checked.length / (inputs.length / 4)) * 100;
+            document.querySelector('.progress-fill').style.width = percentage + '%';
+        }
+
+        function submitTest() {
+            const form = document.getElementById('answersForm');
+            const studentName = document.getElementById('studentName').value || '名前なし';
+            const checked = form.querySelectorAll('input[type="radio"]:checked');
+
+            if (checked.length !== questions.length) {
+                alert('すべての問題に答えてください');
+                return;
+            }
+
+            let score = 0;
+            let results = [];
+
+            questions.forEach(q => {
+                const selected = form.querySelector(`input[name="q${q.number}"]:checked`);
+                const selectedValue = parseInt(selected.value);
+                const isCorrect = selectedValue === q.correct;
+
+                if (isCorrect) {
+                    score += 100 / 30;
+                }
+
+                results.push({
+                    number: q.number,
+                    title: q.title,
+                    selected: selectedValue,
+                    correct: q.correct,
+                    selectedText: q.options[selectedValue - 1],
+                    correctText: q.options[q.correct - 1],
+                    isCorrect: isCorrect
+                });
+            });
+
+            displayResults(studentName, score, results);
+        }
+
+        function displayResults(studentName, score, results) {
+            const testForm = document.getElementById('testForm');
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsList = document.getElementById('resultsList');
+
+            document.getElementById('finalScore').textContent = Math.round(score);
+            const percentage = Math.round((score / 100) * 100);
+            document.getElementById('correctPercentage').textContent = percentage;
+
+            let resultsHTML = '';
+            results.forEach(r => {
+                const className = r.isCorrect ? 'correct' : 'incorrect';
+                const mark = r.isCorrect ? '<span class="mark correct">○</span>' : '<span class="mark incorrect">×</span>';
+                
+                resultsHTML += `
+                    <div class="result-item ${className}">
+                        <div class="result-item-number">Q${r.number}${mark}</div>
+                        <div class="result-item-question">${r.title}</div>
+                        <div class="result-item-answer">
+                            <div><span class="your-answer">回答:</span> ${r.selectedText}</div>
+                            ${!r.isCorrect ? `<div><span class="correct-answer">正解:</span> ${r.correctText}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultsList.innerHTML = resultsHTML;
+            testForm.style.display = 'none';
+            resultsSection.classList.add('show');
+            window.scrollTo(0, 0);
+        }
+
+        function backToTest() {
+            document.getElementById('testForm').style.display = 'block';
+            document.getElementById('resultsSection').classList.remove('show');
+            window.scrollTo(0, 0);
+        }
+
+        function resetForm() {
+            document.getElementById('answersForm').reset();
+            document.getElementById('studentName').value = '';
+            document.querySelector('.progress-fill').style.width = '0%';
+            document.getElementById('testForm').style.display = 'block';
+            document.getElementById('resultsSection').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
